@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+   <title>Tweet Map</title>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+<style>
+html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+#map {
+        height: 100%;
+        width: 1023px;
+      }
+</style>
+
+    
+<script >
+   /* var socket = io();
+    socket.on('new_tweet', function(tweet){
+    	console.log(tweet);
+});*/
+    	</script>
+  </head>
+  <body>
+
+  <div class="col-xs-4"></div>
+  <div class="col-xs-4">
+    <h1>Welcome to Tweet Map</h1>
+   </div>
+   <div class="col-xs-4"></div>
+    	<div class="col-xs-10" id="map">
+        	
+    	</div>
+    	<div class="col-xs-2">
+      <p> <b>Choose a Key Word</b></p>
+      <select id =keys>
+        <option value="All" selected="selected">Show All</option>
+        <option value="Trump">Trump</option>
+        <option value="Hillary">Hillary</option>
+        <option value="Obama">Obama</option>
+        <option value="DNC">DNC</option>
+        <option value="GOP">GOP</option>
+        <option value="Election">Election</option>
+        <option value="Tax">Tax</option>
+        <option value="WikiLeaks">WikiLeaks</option>
+        <option value="Assange">Assange</option>
+        <option value="Cubs">Cubs</option>
+        <option value="Traffic">Traffic</option>
+        <option value="Halloween">Halloween</option>
+        <option value="Vine">Vine</option>
+        <option value="Thanksgiving">Thanksgiving</option>
+      </select>
+        <div id="es-index"> 
+
+        </div>   
+        </div>
+   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCazhbGl7iOujK4r0FmGgpJjOhTdpX48J0"></script> 
+  <script>
+    var map;
+    var markers=[];
+    google.maps.event.addDomListener(window, 'load', initMap);
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 0, lng: 0},
+          draggable: false,
+          zoom: 2,
+          minZoom:2 
+        });
+        map.addListener('zoom_changed', function() {
+         if(map.getZoom()>2){
+          map.draggable=true;
+         }else{
+          map.draggable=false;
+         }  
+       
+       });
+       var Tweets = <%- JSON.stringify(tweets) %>;
+       renderTweets(Tweets);
+    }
+    var socket = io();
+    socket.on('new_index',function(timestamp){
+    	var str="New index created on "+timestamp;
+    	$("#es-index").prepend( "<p>"+str+"</p>" );
+    });
+    socket.on('new_tweet', function(tweet){
+      var tweet_status=tweet.text;
+      var current_selection=$("#keys").find("option:selected").attr('value');
+      var icons = {
+          positive: {
+            icon: 'http://maps.gstatic.com/mapfiles/ridefinder-images/mm_20_green.png'
+          },
+          negative: {
+            icon: 'http://maps.gstatic.com/mapfiles/ridefinder-images/mm_20_red.png'
+          },
+          neutral: {
+            icon: 'http://maps.gstatic.com/mapfiles/ridefinder-images/mm_20_yellow.png'
+          }
+        };
+      if(current_selection=="All" || tweet_status.includes(current_selection)){
+          var coordinates={}
+            coordinates["lat"]=Number(tweet.coordinates.lat);
+            coordinates["lng"]=Number(tweet.coordinates.lng);
+          
+            markers.push(new google.maps.Marker({
+              position: coordinates,
+              title:tweet_status,
+              icon:icons[tweet.sentiment].icon,
+              map: map
+            }));
+          
+      }
+      
+  });
+    $('#keys').change(function(){
+        var keyword=$(this).find("option:selected").attr('value');
+        $.ajax({
+          url: "/key",
+          data:{key:keyword}, 
+          success: function(result){
+            for (var i = 0; i < markers.length; i++) {
+              markers[i].setMap(null);
+            }
+            markers = [];
+            var Tweets = result.tweets;
+            renderTweets(Tweets);
+          }});
+      });
+    function renderTweets(Tweets){
+      var results= Tweets.hits.hits;
+       for (var i = 0; i < results.length; i++) {
+          var tweet=results[i]._source;
+          var tweet_status=tweet.text;
+          var icons = {
+          positive: {
+            icon: 'http://maps.gstatic.com/mapfiles/ridefinder-images/mm_20_green.png'
+          },
+          negative: {
+            icon: 'http://maps.gstatic.com/mapfiles/ridefinder-images/mm_20_red.png'
+          },
+          neutral: {
+            icon: 'http://maps.gstatic.com/mapfiles/ridefinder-images/mm_20_yellow.png'
+          }
+        };
+          var coordinates={}
+            coordinates["lat"]=Number(tweet.coordinates.lat);
+            coordinates["lng"]=Number(tweet.coordinates.lng);
+          
+            markers.push(new google.maps.Marker({
+              position: coordinates,
+              title:tweet_status,
+              icon:icons[tweet.sentiment].icon,
+              map: map
+            }));
+          
+       }
+    }
+    
+	</script>
+    
+	</body>
+</html>
