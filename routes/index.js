@@ -45,7 +45,8 @@ router.get('/key', function(req, res) {
 		else{
 			client.search({
 		  	index: 'tweets',
-		  	q: key
+		  	q: key,
+		  	size:10000
 		}).then(function (body) {
 			tweets=body;
 		  	res.send({tweets:body});

@@ -40,20 +40,20 @@ html, body {
       <p> <b>Choose a Key Word</b></p>
       <select id =keys>
         <option value="All" selected="selected">Show All</option>
-        <option value="Trump">Trump</option>
-        <option value="Hillary">Hillary</option>
-        <option value="Obama">Obama</option>
-        <option value="DNC">DNC</option>
-        <option value="GOP">GOP</option>
-        <option value="Election">Election</option>
-        <option value="Tax">Tax</option>
-        <option value="WikiLeaks">WikiLeaks</option>
-        <option value="Assange">Assange</option>
-        <option value="Cubs">Cubs</option>
-        <option value="Traffic">Traffic</option>
-        <option value="Halloween">Halloween</option>
-        <option value="Vine">Vine</option>
-        <option value="Thanksgiving">Thanksgiving</option>
+        <option value="trump">Trump</option>
+        <option value="weather">Weather</option>
+        <option value="job">Job</option>
+        <option value="hiring">Hiring</option>
+        <option value="love">Love</option>
+        <option value="morning">Morning</option>
+        <option value="temperature">Temperature</option>
+        <option value="rain">Rain</option>
+        <option value="beautiful">Beautiful</option>
+        <option value="university">University</option>
+        <option value="traffic">Traffic</option>
+        <option value="birthday">Birthday</option>
+        <option value="newyork">New York</option>
+        <option value="thanksgiving">Thanksgiving</option>
       </select>
         <div id="es-index"> 
 
@@ -82,7 +82,7 @@ html, body {
        var Tweets = <%- JSON.stringify(tweets) %>;
        renderTweets(Tweets);
     }
-    var socket = io.connect("http://node-express-env.jqqbkvnusd.us-west-2.elasticbeanstalk.com/");
+    var socket = io();
     socket.on('new_index',function(timestamp){
     	var str="New index created on "+timestamp;
     	$("#es-index").prepend( "<p>"+str+"</p>" );
