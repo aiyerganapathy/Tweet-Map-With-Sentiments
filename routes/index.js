@@ -59,7 +59,10 @@ router.get('/key', function(req, res) {
 
 	
 });
-
+var keepSocketAlive= function(){
+	io.sockets.emit('keepingalive',{});
+	setTimeout(keepSocketAlive,5000);
+}
 var t = new Twitter({
 	    consumer_key: 'CVS0Qnhxs7GvPXSvGFYJVHYhw',
 	    consumer_secret: 'kthNyBSfxyH98uWZ95tcnhUubNHflexSJ3M2O3Xn1PYTv0rI38',
