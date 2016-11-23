@@ -82,7 +82,7 @@ html, body {
        var Tweets = <%- JSON.stringify(tweets) %>;
        renderTweets(Tweets);
     }
-    var socket = io.connect('http://node-express-env.jqqbkvnusd.us-west-2.elasticbeanstalk.com:8080/');
+    var socket = io();
     socket.on('new_index',function(timestamp){
     	var str="New index created on "+timestamp;
     	$("#es-index").prepend( "<p>"+str+"</p>" );
