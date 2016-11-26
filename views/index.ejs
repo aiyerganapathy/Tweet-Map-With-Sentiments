@@ -88,7 +88,7 @@ html, body {
        renderTweets(Tweets);
     }
     var socket = io();
-    socket.on('polling',function(){
+    socket.on('polling',function(data){
 
     });
     socket.on('new_index',function(timestamp){
