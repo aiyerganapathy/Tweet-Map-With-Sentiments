@@ -90,7 +90,7 @@ stream.on('data', function(data) {
 	}
 	else{
 		count++;
-		if(count==4000){
+		if(count==600){
 			io.sockets.emit('polling',{});
 			count=0;
 		}
