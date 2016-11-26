@@ -67,12 +67,9 @@ var t = new Twitter({
 	    access_token_secret: 'DzkkVvl6BE7fMwmN4HwFJSM7yq4DFdkv7FkoGRTlrXIgB'
 	  });
 var stream = t.stream('statuses/sample');
-var keepSocketAlive= function(){
-	io.sockets.emit('keepingalive',{});
-	setTimeout(keepSocketAlive,10000);
-}
 
 stream.on('data', function(data) {
+	io.sockets.emit('keepingalive',{});
 	if(data.hasOwnProperty('created_at') && data['lang'] == "en" && data['coordinates'] != null){
 		var tweet={
 			id:data['id_str'],
@@ -90,7 +87,13 @@ stream.on('data', function(data) {
 		});
 	}
 
+
 });
+stream.on('error', function(error) {
+	io.sockets.emit('keepingalive',{});
+    console.log('Error in twitter stream');
+    console.log(error);
+  });
 
 var Consumer = require('sqs-consumer');
  

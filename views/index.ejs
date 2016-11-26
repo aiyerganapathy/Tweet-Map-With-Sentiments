@@ -93,8 +93,8 @@ html, body {
     	$("#es-index").prepend( "<p>"+str+"</p>" );
     });
     socket.on('new_tweet', function(tweet){
-      var tweet_status=tweet.text;
       console.log(tweet);
+      var tweet_status=tweet.text;
       var current_selection=$("#keys").find("option:selected").attr('value');
       var icons = {
           positive: {
