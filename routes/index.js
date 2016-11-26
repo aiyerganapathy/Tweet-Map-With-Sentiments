@@ -4,7 +4,7 @@ var Twitter = require('twitter');
 var AWS = require('aws-sdk');
 AWS.config.update({region:'us-west-2'});
 var elasticsearch = require('elasticsearch');
-
+var count=0;
 var returnRouter = function(io) {
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -67,10 +67,7 @@ var t = new Twitter({
 	    access_token_secret: 'DzkkVvl6BE7fMwmN4HwFJSM7yq4DFdkv7FkoGRTlrXIgB'
 	  });
 var stream = t.stream('statuses/sample');
-	var keepSocketAlive=function(){
-	io.socket.emit('polling',{});
-	setTimeout(keepSocketAlive,5000);
-};
+
 stream.on('data', function(data) {
 	
 	if(data.hasOwnProperty('created_at') && data['lang'] == "en" && data['coordinates'] != null){
@@ -89,6 +86,13 @@ stream.on('data', function(data) {
  		snsPublish(tweet, {arn: 'arn:aws:sns:us-west-2:012274775406:Processed_tweet'}).then(messageId => {
     		console.log('Processed tweet id '+messageId);
 		});
+	}
+	else{
+		count++;
+		if(count==100){
+			io.sockets.emit('polling',{});
+			count=0;
+		}
 	}
 
 
