@@ -94,6 +94,7 @@ html, body {
     });
     socket.on('new_tweet', function(tweet){
       var tweet_status=tweet.text;
+      console.log(tweet);
       var current_selection=$("#keys").find("option:selected").attr('value');
       var icons = {
           positive: {
