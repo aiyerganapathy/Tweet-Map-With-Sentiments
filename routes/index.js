@@ -5,6 +5,7 @@ var AWS = require('aws-sdk');
 AWS.config.update({region:'us-west-2'});
 var elasticsearch = require('elasticsearch');
 var count=0;
+var Consumer = require('sqs-consumer');
 var returnRouter = function(io) {
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -60,6 +61,25 @@ router.get('/key', function(req, res) {
 	
 });
 
+router.get('/get_tweets', function(req, res) {
+	var consume_socket_tweet=Consumer.create({
+  queueUrl: 'https://sqs.us-west-2.amazonaws.com/012274775406/send_via_socket',
+  handleMessage: function (message, done) {
+  	var new_socket_tweet=JSON.parse(JSON.parse(message['Body'])['Message']);
+  	console.log('Inside socket consumer');
+  	res.send({tweets:new_socket_tweet});
+  }
+});
+consume_socket_tweet.on('error', function (err) {
+  console.log(err.message);
+});
+consume_socket_tweet.start();
+	
+
+	
+});
+
+
 var t = new Twitter({
 	    consumer_key: 'CVS0Qnhxs7GvPXSvGFYJVHYhw',
 	    consumer_secret: 'kthNyBSfxyH98uWZ95tcnhUubNHflexSJ3M2O3Xn1PYTv0rI38',
@@ -69,9 +89,7 @@ var t = new Twitter({
 var stream = t.stream('statuses/sample');
 
 stream.on('data', function(data) {
-	if(count<1){
-		io.sockets.emit('polling',{});
-	}
+	
 	if(data.hasOwnProperty('created_at') && data['lang'] == "en" && data['coordinates'] != null){
 		var tweet={
 			id:data['id_str'],
@@ -88,13 +106,13 @@ stream.on('data', function(data) {
     		console.log('Processed tweet id '+messageId);
 		});
 	}
-	else{
-		count++;
-		if(count==600){
-			io.sockets.emit('polling',{});
-			count=0;
-		}
-	}
+	// else{
+	// 	count++;
+	// 	if(count==600){
+	// 		io.sockets.emit('polling',{});
+	// 		count=0;
+	// 	}
+	// }
 
 
 });
@@ -104,7 +122,7 @@ stream.on('error', function(error) {
     console.log(error);
   });
 
-var Consumer = require('sqs-consumer');
+
  
 var consume_new_tweet=Consumer.create({
   queueUrl: 'https://sqs.us-west-2.amazonaws.com/012274775406/new_tweet',
@@ -166,26 +184,6 @@ consume_sentiment_tweet.on('error', function (err) {
 });
 consume_sentiment_tweet.start();
 
-var consume_socket_tweet=Consumer.create({
-  queueUrl: 'https://sqs.us-west-2.amazonaws.com/012274775406/send_via_socket',
-  handleMessage: function (message, done) {
-  	var new_socket_tweet=JSON.parse(JSON.parse(message['Body'])['Message']);
-  	console.log('Inside socket consumer');
-  	try{
-  	io.sockets.emit('new_tweet', new_socket_tweet);
-  	done();
-  	}
-  	catch(e){
-  		console.log('socket error new_tweet event');
-  		console.log(e);
-  	}
-  	
-  }
-});
-consume_socket_tweet.on('error', function (err) {
-  console.log(err.message);
-});
-consume_socket_tweet.start();
 
 return router;
 }

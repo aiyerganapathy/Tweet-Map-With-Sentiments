@@ -68,6 +68,29 @@ html, body {
   <script>
     var map;
     var markers=[];
+    var i = setInterval(function(){
+   
+      $.ajax({
+          url: "/get_tweets", 
+          success: function(result){
+            console.log(result);
+            var Tweets = result.tweets;
+            var keyword=$(this).find("option:selected").attr('value');
+            if(keyword=='All'){
+            $("#es-index").prepend( "<p> New index created on "+(new Date())+"</p>" );
+            renderTweets(Tweets);
+          }
+          else if( Tweets.text.toLowerCase().includes(keyword) ){
+            $("#es-index").prepend( "<p> New index created on "+(new Date())+"</p>" );
+            renderTweets(Tweets); 
+          }
+          else{
+            $("#es-index").prepend( "<p> New index created on "+(new Date())+"</p>" );
+          }
+          }});
+
+
+},10000)
     google.maps.event.addDomListener(window, 'load', initMap);
     function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
@@ -91,10 +114,10 @@ html, body {
     socket.on('polling',function(data){
 
     });
-    socket.on('new_index',function(timestamp){
-    	var str="New index created on "+timestamp;
-    	$("#es-index").prepend( "<p>"+str+"</p>" );
-    });
+    // socket.on('new_index',function(timestamp){
+    // 	var str=" "+timestamp;
+    	
+    // });
     socket.on('new_tweet', function(tweet){
       console.log(tweet);
       var tweet_status=tweet.text;
