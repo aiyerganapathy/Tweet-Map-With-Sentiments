@@ -163,10 +163,10 @@ consume_socket_tweet.on('error', function (err) {
   console.log(err.message);
 });
 consume_socket_tweet.start();
-var keepSocketAlive= function(){
-	io.sockets.emit('keepingalive',{});
-	setTimeout(keepSocketAlive,5000);
-}
+// var keepSocketAlive= function(){
+// 	io.sockets.emit('keepingalive',{});
+// 	setTimeout(keepSocketAlive,5000);
+// }
 
 return router;
 }
