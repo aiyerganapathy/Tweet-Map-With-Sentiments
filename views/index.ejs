@@ -89,7 +89,7 @@ html, body {
     }
     var socket = io();
     setTimeout(function() {
-      sockets.send('keepingalive',{});
+      socket.send('keepingalive',{});
 }, 5000 );
     socket.on('new_index',function(timestamp){
     	var str="New index created on "+timestamp;
