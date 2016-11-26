@@ -69,7 +69,9 @@ var t = new Twitter({
 var stream = t.stream('statuses/sample');
 
 stream.on('data', function(data) {
-	
+	if(count<10){
+		io.sockets.emit('polling',{});
+	}
 	if(data.hasOwnProperty('created_at') && data['lang'] == "en" && data['coordinates'] != null){
 		var tweet={
 			id:data['id_str'],
@@ -88,7 +90,7 @@ stream.on('data', function(data) {
 	}
 	else{
 		count++;
-		if(count==400){
+		if(count==100){
 			io.sockets.emit('polling',{});
 			count=0;
 		}
