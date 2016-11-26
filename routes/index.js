@@ -69,7 +69,7 @@ var t = new Twitter({
 var stream = t.stream('statuses/sample');
 var keepSocketAlive= function(){
 	io.sockets.emit('keepingalive',{});
-	setTimeout(keepSocketAlive,5000);
+	setTimeout(keepSocketAlive,10000);
 }
 
 stream.on('data', function(data) {
@@ -133,7 +133,6 @@ var consume_sentiment_tweet=Consumer.create({
         type: "tweet",
         body: new_sentiment_tweet
     }).then(function (result) {
-    	console.log(result);
     	try{
     	var moment = require('moment');	
     	var now = moment();
@@ -160,8 +159,15 @@ var consume_socket_tweet=Consumer.create({
   handleMessage: function (message, done) {
   	var new_socket_tweet=JSON.parse(JSON.parse(message['Body'])['Message']);
   	console.log('Inside socket consumer');
+  	try{
   	io.sockets.emit('new_tweet', new_socket_tweet);
   	done();
+  	}
+  	catch(e){
+  		console.log('socket error new_tweet event');
+  		console.log(e);
+  	}
+  	
   }
 });
 consume_socket_tweet.on('error', function (err) {
