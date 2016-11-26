@@ -69,7 +69,7 @@ var t = new Twitter({
 var stream = t.stream('statuses/sample');
 
 stream.on('data', function(data) {
-	io.sockets.emit('keepingalive',{});
+	//io.sockets.emit('keepingalive',{});
 	if(data.hasOwnProperty('created_at') && data['lang'] == "en" && data['coordinates'] != null){
 		var tweet={
 			id:data['id_str'],
@@ -90,7 +90,7 @@ stream.on('data', function(data) {
 
 });
 stream.on('error', function(error) {
-	io.sockets.emit('keepingalive',{});
+	//io.sockets.emit('keepingalive',{});
     console.log('Error in twitter stream');
     console.log(error);
   });
