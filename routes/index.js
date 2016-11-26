@@ -71,7 +71,6 @@ var stream = t.stream('statuses/sample');
 stream.on('data', function(data) {
 	
 	if(data.hasOwnProperty('created_at') && data['lang'] == "en" && data['coordinates'] != null){
-		io.sockets.emit('keepingalive',{});
 		var tweet={
 			id:data['id_str'],
 			text:data['text'],
