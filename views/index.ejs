@@ -88,9 +88,9 @@ html, body {
        renderTweets(Tweets);
     }
     var socket = io();
-    socket.on('error', function(){
-      socket.socket.reconnect();
-});
+    setTimeout(function() {
+      sockets.send('keepingalive',{});
+}, 5000 );
     socket.on('new_index',function(timestamp){
     	var str="New index created on "+timestamp;
     	$("#es-index").prepend( "<p>"+str+"</p>" );
