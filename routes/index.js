@@ -82,7 +82,7 @@ stream.on('data', function(data) {
 		}
 		var snsPublish = require('aws-sns-publish');
  		snsPublish(tweet, {arn: 'arn:aws:sns:us-west-2:012274775406:Processed_tweet'}).then(messageId => {
-    		console.log(messageId);
+    		console.log('Processed tweet id '+messageId);
 		});
 	}
 
@@ -100,11 +100,11 @@ var consume_new_tweet=Consumer.create({
 	var text_list = [new_tweet.text];
 	var p = ml.classifiers.classify(module_id, text_list, true);
 	p.then(function (res) {
-		console.log(res);
+		
 	    new_tweet['sentiment']=res.result[0][0].label;
 	    var snsPublish = require('aws-sns-publish');
  		snsPublish(new_tweet, {arn: 'arn:aws:sns:us-west-2:012274775406:tweet_sentiment'}).then(messageId => {
-    		console.log(messageId);
+    		console.log('sentiment id '+messageId);
     		done();
 		});
 	    
@@ -129,7 +129,7 @@ var consume_sentiment_tweet=Consumer.create({
         type: "tweet",
         body: new_sentiment_tweet
     }).then(function (result) {
-    	//console.log(result);
+    	console.log(result);
     	try{
     	var moment = require('moment');	
     	var now = moment();
@@ -140,7 +140,7 @@ var consume_sentiment_tweet=Consumer.create({
 		}
     	var snsPublish = require('aws-sns-publish');
  		snsPublish(new_sentiment_tweet, {arn: 'arn:aws:sns:us-west-2:012274775406:send_via_socket'}).then(messageId => {
-    		console.log(messageId);
+    		console.log('socket id '+messageId);
     		done();
 		});
     });
@@ -155,7 +155,7 @@ var consume_socket_tweet=Consumer.create({
   queueUrl: 'https://sqs.us-west-2.amazonaws.com/012274775406/send_via_socket',
   handleMessage: function (message, done) {
   	var new_socket_tweet=JSON.parse(JSON.parse(message['Body'])['Message']);
-  	//console.log(new_socket_tweet);
+  	console.log('Inside socket consumer');
   	io.sockets.emit('new_tweet', new_socket_tweet);
   	done();
   }
@@ -166,7 +166,7 @@ consume_socket_tweet.on('error', function (err) {
 consume_socket_tweet.start();
 var keepSocketAlive= function(){
 	io.sockets.emit('keepingalive',{});
-	setTimeout(keepSocketAlive,10000);
+	setTimeout(keepSocketAlive,5000);
 }
 
 return router;
