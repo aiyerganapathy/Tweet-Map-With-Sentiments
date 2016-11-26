@@ -67,6 +67,10 @@ var t = new Twitter({
 	    access_token_secret: 'DzkkVvl6BE7fMwmN4HwFJSM7yq4DFdkv7FkoGRTlrXIgB'
 	  });
 var stream = t.stream('statuses/sample');
+var keepSocketAlive= function(){
+	io.sockets.emit('keepingalive',{});
+	setTimeout(keepSocketAlive,5000);
+}
 
 stream.on('data', function(data) {
 	if(data.hasOwnProperty('created_at') && data['lang'] == "en" && data['coordinates'] != null){
@@ -164,10 +168,6 @@ consume_socket_tweet.on('error', function (err) {
   console.log(err.message);
 });
 consume_socket_tweet.start();
-var keepSocketAlive= function(){
-	io.sockets.emit('keepingalive',{});
-	setTimeout(keepSocketAlive,5000);
-}
 
 return router;
 }
