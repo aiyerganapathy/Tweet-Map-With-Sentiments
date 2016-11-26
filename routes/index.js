@@ -68,7 +68,7 @@ var t = new Twitter({
 	  });
 var stream = t.stream('statuses/sample');
 	var keepSocketAlive=function(){
-	io.emit('polling',{});
+	io.socket.emit('polling',{});
 	setTimeout(keepSocketAlive,5000);
 };
 stream.on('data', function(data) {
