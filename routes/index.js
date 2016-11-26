@@ -100,6 +100,7 @@ var consume_new_tweet=Consumer.create({
 	var text_list = [new_tweet.text];
 	var p = ml.classifiers.classify(module_id, text_list, true);
 	p.then(function (res) {
+		console.log(res);
 	    new_tweet['sentiment']=res.result[0][0].label;
 	    var snsPublish = require('aws-sns-publish');
  		snsPublish(new_tweet, {arn: 'arn:aws:sns:us-west-2:012274775406:tweet_sentiment'}).then(messageId => {
@@ -128,7 +129,7 @@ var consume_sentiment_tweet=Consumer.create({
         type: "tweet",
         body: new_sentiment_tweet
     }).then(function (result) {
-    	console.log(result);
+    	//console.log(result);
     	try{
     	var moment = require('moment');	
     	var now = moment();
@@ -154,7 +155,7 @@ var consume_socket_tweet=Consumer.create({
   queueUrl: 'https://sqs.us-west-2.amazonaws.com/012274775406/send_via_socket',
   handleMessage: function (message, done) {
   	var new_socket_tweet=JSON.parse(JSON.parse(message['Body'])['Message']);
-  	console.log(new_socket_tweet);
+  	//console.log(new_socket_tweet);
   	io.sockets.emit('new_tweet', new_socket_tweet);
   	done();
   }
@@ -163,10 +164,10 @@ consume_socket_tweet.on('error', function (err) {
   console.log(err.message);
 });
 consume_socket_tweet.start();
-// var keepSocketAlive= function(){
-// 	io.sockets.emit('keepingalive',{});
-// 	setTimeout(keepSocketAlive,5000);
-// }
+var keepSocketAlive= function(){
+	io.sockets.emit('keepingalive',{});
+	setTimeout(keepSocketAlive,10000);
+}
 
 return router;
 }
