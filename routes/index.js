@@ -59,10 +59,7 @@ router.get('/key', function(req, res) {
 
 	
 });
-var keepSocketAlive= function(){
-	io.sockets.emit('keepingalive',{});
-	setTimeout(keepSocketAlive,5000);
-}
+
 var t = new Twitter({
 	    consumer_key: 'CVS0Qnhxs7GvPXSvGFYJVHYhw',
 	    consumer_secret: 'kthNyBSfxyH98uWZ95tcnhUubNHflexSJ3M2O3Xn1PYTv0rI38',
@@ -166,6 +163,10 @@ consume_socket_tweet.on('error', function (err) {
   console.log(err.message);
 });
 consume_socket_tweet.start();
+var keepSocketAlive= function(){
+	io.sockets.emit('keepingalive',{});
+	setTimeout(keepSocketAlive,5000);
+}
 
 return router;
 }
